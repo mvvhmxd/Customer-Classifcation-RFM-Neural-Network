@@ -2,20 +2,20 @@
 
 <div align="center">
 
-🧠 **Production-ready customer classification system using Neural Networks and RFM Analysis**
+ **Production-ready customer classification system using Neural Networks and RFM Analysis**
 
 [![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://python.org)
 [![TensorFlow](https://img.shields.io/badge/TensorFlow-2.15-orange.svg)](https://tensorflow.org)
 [![Flask](https://img.shields.io/badge/Flask-3.0-green.svg)](https://flask.palletsprojects.com)
 [![Accuracy](https://img.shields.io/badge/Accuracy-99.08%25-brightgreen.svg)](#)
 
-[**🚀 Live Demo**](https://your-app.railway.app) • [**📊 Report**](#) • [**📝 Documentation**](#)
+[**Live Demo**]([https://your-app.railway.app](https://huggingface.co/spaces/mvvhmxd1/Customer-Classifcation-RFM-Neural-Network)) 
 
 </div>
 
 ---
 
-## 📸 Screenshots
+##  Screenshots
 
 ### Model Performance Comparison
 ![Model Comparison](model_comparison.png)
@@ -34,7 +34,7 @@
 
 ---
 
-## 🎯 Overview
+##  Overview
 
 This project classifies online retail customers into three value segments using multiple machine learning models:
 
@@ -44,7 +44,7 @@ This project classifies online retail customers into three value segments using 
 | Gradient Boosting | 98.73% | 98.25% |
 | Random Forest | 98.50% | 98.00% |
 
-## 📊 Customer Segments
+##  Customer Segments
 
 | Segment | Characteristics | Strategy |
 |---------|-----------------|----------|
@@ -54,7 +54,7 @@ This project classifies online retail customers into three value segments using 
 
 ---
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 - **Backend**: Flask, TensorFlow/Keras, Scikit-learn
 - **Frontend**: HTML5, CSS3, Chart.js
@@ -63,7 +63,7 @@ This project classifies online retail customers into three value segments using 
 
 ---
 
-## 📁 Project Structure
+##  Project Structure
 
 ```
 ├── app.py                  # Flask application (3 models)
@@ -81,7 +81,7 @@ This project classifies online retail customers into three value segments using 
 
 ---
 
-## 🏃‍♂️ Quick Start
+##  Quick Start
 
 ### 1. Clone the repository
 ```bash
@@ -149,7 +149,7 @@ Input(3) → Dense(64, ReLU) → Dropout(0.2) → Dense(32, ReLU) → Dense(3, S
 
 ---
 
-## 📚 Dataset
+##  Dataset
 
 **UCI Online Retail Dataset**
 - 541,909 transactions
@@ -158,7 +158,7 @@ Input(3) → Dense(64, ReLU) → Dropout(0.2) → Dense(32, ReLU) → Dense(3, S
 
 ---
 
-## 📝 License
+##  License
 
 MIT License
 
