@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         :root {
             --primary: #0ea5e9;
@@ -25,7 +26,6 @@
             --text-secondary: #94a3b8;
             --text-muted: #64748b;
             --border: #334155;
-            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
         }
 
         [data-theme="light"] {
@@ -36,7 +36,6 @@
             --text-secondary: #475569;
             --text-muted: #94a3b8;
             --border: #e2e8f0;
-            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
         }
 
         * {
@@ -51,17 +50,16 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background: var(--bg-primary);
             color: var(--text-primary);
             min-height: 100vh;
-            min-height: -webkit-fill-available;
-            transition: background 0.3s, color 0.3s;
+            transition: all 0.3s;
             padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
         }
 
         .container {
-            max-width: 1280px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 1.5rem;
         }
@@ -77,7 +75,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
             gap: 1rem;
             flex-wrap: wrap;
         }
@@ -102,7 +100,6 @@
         .brand-text h1 {
             font-size: 1.125rem;
             font-weight: 700;
-            letter-spacing: -0.025em;
         }
 
         .brand-text span {
@@ -113,18 +110,18 @@
         .header-actions {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 0.5rem;
         }
 
         .icon-btn {
-            width: 44px;
-            height: 44px;
+            width: 40px;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
             background: var(--bg-secondary);
             border: 1px solid var(--border);
-            border-radius: 10px;
+            border-radius: 8px;
             color: var(--text-secondary);
             cursor: pointer;
             transition: all 0.2s;
@@ -135,17 +132,69 @@
             color: var(--text-primary);
         }
 
-        /* Main Layout */
-        .main-grid {
-            display: grid;
-            grid-template-columns: 400px 1fr;
-            gap: 1.5rem;
-            align-items: start;
+        /* Tabs */
+        .main-tabs {
+            display: flex;
+            gap: 0.25rem;
+            background: var(--bg-secondary);
+            padding: 0.25rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
         }
 
-        @media (max-width: 1024px) {
-            .main-grid {
-                grid-template-columns: 1fr;
+        .main-tab {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            min-height: 44px;
+        }
+
+        .main-tab:hover {
+            color: var(--text-primary);
+        }
+
+        .main-tab.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        @media (max-width: 640px) {
+            .main-tab span {
+                display: none;
+            }
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
         }
 
@@ -155,36 +204,60 @@
             border: 1px solid var(--border);
             border-radius: 16px;
             overflow: hidden;
-            box-shadow: var(--card-shadow);
         }
 
         .card-header {
-            padding: 1.25rem 1.5rem;
+            padding: 1rem 1.25rem;
             border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 0.5rem;
         }
 
         .card-header h2 {
-            font-size: 1rem;
+            font-size: 0.9375rem;
             font-weight: 600;
         }
 
         .card-body {
-            padding: 1.5rem;
+            padding: 1.25rem;
         }
 
-        /* Model Selector */
+        /* Grid Layouts */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        @media (max-width: 1024px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Model Tabs */
         .model-tabs {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 0.5rem;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.25rem;
         }
 
         .model-tab {
-            padding: 0.875rem 0.5rem;
+            padding: 0.75rem 0.5rem;
             background: var(--bg-tertiary);
             border: 2px solid transparent;
             border-radius: 10px;
@@ -205,7 +278,7 @@
         .model-tab-icon {
             width: 32px;
             height: 32px;
-            margin: 0 auto 0.5rem;
+            margin: 0 auto 0.375rem;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -220,7 +293,7 @@
         }
 
         .model-tab-label {
-            font-size: 0.75rem;
+            font-size: 0.6875rem;
             font-weight: 500;
             color: var(--text-secondary);
         }
@@ -231,30 +304,29 @@
 
         /* Form */
         .form-group {
-            margin-bottom: 1.25rem;
+            margin-bottom: 1rem;
         }
 
         .form-label {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            font-size: 0.875rem;
+            gap: 0.375rem;
+            font-size: 0.8125rem;
             font-weight: 500;
             color: var(--text-secondary);
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.375rem;
         }
 
         .form-input {
             width: 100%;
-            padding: 0.875rem 1rem;
+            padding: 0.75rem 1rem;
             background: var(--bg-tertiary);
             border: 1px solid var(--border);
-            border-radius: 10px;
+            border-radius: 8px;
             color: var(--text-primary);
-            font-size: 1rem;
+            font-size: 0.9375rem;
             font-family: inherit;
             transition: all 0.2s;
-            -webkit-appearance: none;
         }
 
         .form-input:focus {
@@ -264,29 +336,32 @@
         }
 
         .form-hint {
-            font-size: 0.75rem;
+            font-size: 0.6875rem;
             color: var(--text-muted);
-            margin-top: 0.375rem;
+            margin-top: 0.25rem;
         }
 
-        /* Button */
-        .btn-primary {
-            width: 100%;
-            padding: 1rem;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        /* Buttons */
+        .btn {
+            padding: 0.75rem 1.25rem;
             border: none;
-            border-radius: 10px;
-            color: white;
-            font-size: 0.9375rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
             font-weight: 600;
             font-family: inherit;
             cursor: pointer;
             transition: all 0.2s;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
-            min-height: 48px;
+            min-height: 44px;
+        }
+
+        .btn-primary {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
         }
 
         .btn-primary:hover {
@@ -294,14 +369,29 @@
             box-shadow: 0 4px 12px rgba(14, 165, 233, 0.4);
         }
 
-        .btn-primary:active {
-            transform: translateY(0);
-        }
-
         .btn-primary:disabled {
             opacity: 0.6;
             cursor: not-allowed;
             transform: none;
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            opacity: 0.9;
         }
 
         /* Sample Buttons */
@@ -313,14 +403,18 @@
         }
 
         .sample-btn {
-            padding: 0.625rem;
+            padding: 0.5rem;
             background: var(--bg-tertiary);
             border: 1px solid var(--border);
-            border-radius: 8px;
+            border-radius: 6px;
             cursor: pointer;
             transition: all 0.2s;
             text-align: center;
             min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.375rem;
         }
 
         .sample-btn:hover {
@@ -328,35 +422,32 @@
         }
 
         .sample-dot {
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
             border-radius: 50%;
-            display: inline-block;
-            margin-right: 0.375rem;
         }
 
         .sample-btn span {
-            font-size: 0.75rem;
+            font-size: 0.6875rem;
             color: var(--text-secondary);
         }
 
         /* Results */
         .result-placeholder {
             text-align: center;
-            padding: 3rem 1.5rem;
+            padding: 2.5rem 1rem;
             color: var(--text-muted);
         }
 
         .result-placeholder-icon {
-            width: 64px;
-            height: 64px;
-            margin: 0 auto 1rem;
+            width: 56px;
+            height: 56px;
+            margin: 0 auto 0.75rem;
             background: var(--bg-tertiary);
-            border-radius: 16px;
+            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--text-muted);
         }
 
         .result-container {
@@ -365,36 +456,24 @@
 
         .result-container.visible {
             display: block;
-            animation: fadeIn 0.4s ease;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            animation: fadeIn 0.4s;
         }
 
         /* Segment Result */
         .segment-result {
             display: flex;
             align-items: center;
-            gap: 1rem;
-            padding: 1.25rem;
+            gap: 0.875rem;
+            padding: 1rem;
             background: var(--bg-tertiary);
             border-radius: 12px;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.25rem;
         }
 
         .segment-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -415,96 +494,126 @@
         }
 
         .segment-info h3 {
-            font-size: 1.25rem;
+            font-size: 1.125rem;
             font-weight: 700;
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.125rem;
         }
 
         .segment-info span {
-            font-size: 0.875rem;
+            font-size: 0.8125rem;
             color: var(--text-secondary);
         }
 
         .confidence-badge {
             margin-left: auto;
-            padding: 0.375rem 0.75rem;
+            padding: 0.25rem 0.625rem;
             background: var(--bg-secondary);
-            border-radius: 20px;
-            font-size: 0.875rem;
+            border-radius: 16px;
+            font-size: 0.8125rem;
             font-weight: 600;
             color: var(--primary);
         }
 
-        /* Reasoning Section */
+        /* Insights Section */
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+        }
+
+        @media (max-width: 640px) {
+            .insights-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .insight-card {
+            background: var(--bg-tertiary);
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .insight-grade {
+            width: 40px;
+            height: 40px;
+            margin: 0 auto 0.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .grade-a {
+            background: var(--success);
+        }
+
+        .grade-b {
+            background: #22d3ee;
+        }
+
+        .grade-c {
+            background: var(--warning);
+        }
+
+        .grade-d {
+            background: #f97316;
+        }
+
+        .grade-f {
+            background: var(--danger);
+        }
+
+        .insight-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 0.25rem;
+        }
+
+        .insight-value {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.125rem;
+        }
+
+        .insight-percentile {
+            font-size: 0.6875rem;
+            color: var(--text-secondary);
+        }
+
+        /* Reasoning */
         .reasoning-section {
             background: var(--bg-tertiary);
-            border-radius: 12px;
-            padding: 1.25rem;
-            margin-bottom: 1.5rem;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1.25rem;
         }
 
         .reasoning-title {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            font-size: 0.875rem;
+            gap: 0.375rem;
+            font-size: 0.8125rem;
             font-weight: 600;
-            margin-bottom: 1rem;
-            color: var(--text-primary);
+            margin-bottom: 0.75rem;
         }
 
         .reasoning-text {
-            font-size: 0.875rem;
+            font-size: 0.8125rem;
             line-height: 1.6;
             color: var(--text-secondary);
-            margin-bottom: 1rem;
         }
 
-        .feature-bars {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-
-        .feature-bar {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .feature-label {
-            width: 80px;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-
-        .feature-track {
-            flex: 1;
-            height: 6px;
-            background: var(--bg-secondary);
-            border-radius: 3px;
-            overflow: hidden;
-        }
-
-        .feature-fill {
-            height: 100%;
-            border-radius: 3px;
-            transition: width 0.6s ease;
-        }
-
-        .feature-value {
-            width: 40px;
-            font-size: 0.75rem;
-            font-weight: 500;
-            text-align: right;
-        }
-
-        /* Charts Grid */
+        /* Charts */
         .charts-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
         }
 
         @media (max-width: 640px) {
@@ -515,27 +624,27 @@
 
         .chart-card {
             background: var(--bg-tertiary);
-            border-radius: 12px;
-            padding: 1rem;
+            border-radius: 10px;
+            padding: 0.875rem;
         }
 
         .chart-title {
-            font-size: 0.75rem;
+            font-size: 0.6875rem;
             font-weight: 500;
             color: var(--text-muted);
-            margin-bottom: 0.75rem;
+            margin-bottom: 0.5rem;
         }
 
         .chart-container {
             position: relative;
-            height: 160px;
+            height: 140px;
         }
 
         /* Model Comparison */
         .model-comparison {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 0.75rem;
+            gap: 0.5rem;
         }
 
         @media (max-width: 480px) {
@@ -547,10 +656,9 @@
         .model-card {
             background: var(--bg-tertiary);
             border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 1rem;
+            border-radius: 8px;
+            padding: 0.75rem;
             text-align: center;
-            transition: all 0.2s;
         }
 
         .model-card.active {
@@ -559,9 +667,9 @@
         }
 
         .model-card-icon {
-            width: 28px;
-            height: 28px;
-            margin: 0 auto 0.5rem;
+            width: 24px;
+            height: 24px;
+            margin: 0 auto 0.375rem;
             color: var(--text-muted);
         }
 
@@ -570,104 +678,161 @@
         }
 
         .model-card-name {
-            font-size: 0.6875rem;
+            font-size: 0.625rem;
             color: var(--text-muted);
-            margin-bottom: 0.375rem;
-        }
-
-        .model-card-segment {
-            font-size: 0.875rem;
-            font-weight: 600;
             margin-bottom: 0.25rem;
         }
 
-        .model-card-conf {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-
-        /* History Section */
-        .history-section {
-            margin-top: 1.5rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid var(--border);
-        }
-
-        .history-title {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 1rem;
-        }
-
-        .history-title h3 {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.875rem;
+        .model-card-segment {
+            font-size: 0.8125rem;
             font-weight: 600;
         }
 
-        .history-clear {
+        .model-card-conf {
+            font-size: 0.6875rem;
+            color: var(--text-muted);
+        }
+
+        /* Export Button */
+        .export-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        @media (max-width: 480px) {
+            .export-actions {
+                flex-direction: column;
+            }
+        }
+
+        .export-actions .btn {
+            flex: 1;
+        }
+
+        /* Batch Upload */
+        .upload-zone {
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .upload-zone:hover,
+        .upload-zone.dragover {
+            border-color: var(--primary);
+            background: rgba(14, 165, 233, 0.05);
+        }
+
+        .upload-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .upload-text {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-hint {
             font-size: 0.75rem;
             color: var(--text-muted);
-            background: none;
-            border: none;
-            cursor: pointer;
         }
 
-        .history-clear:hover {
-            color: var(--danger);
+        #file-input {
+            display: none;
         }
 
-        .history-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-
-        .history-item {
-            display: flex;
-            align-items: center;
+        /* Batch Results */
+        .batch-summary {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
             gap: 0.75rem;
-            padding: 0.75rem;
+            margin-bottom: 1.25rem;
+        }
+
+        @media (max-width: 640px) {
+            .batch-summary {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .summary-card {
             background: var(--bg-tertiary);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
         }
 
-        .history-item:hover {
-            background: var(--bg-primary);
+        .summary-value {
+            font-size: 1.5rem;
+            font-weight: 700;
         }
 
-        .history-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            flex-shrink: 0;
+        .summary-label {
+            font-size: 0.6875rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
         }
 
-        .history-details {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .history-segment {
+        .batch-table {
+            width: 100%;
+            border-collapse: collapse;
             font-size: 0.8125rem;
+        }
+
+        .batch-table th,
+        .batch-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .batch-table th {
+            background: var(--bg-tertiary);
+            font-weight: 600;
+            font-size: 0.6875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+        }
+
+        .batch-table tbody tr:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .segment-pill {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.6875rem;
             font-weight: 500;
         }
 
-        .history-rfm {
-            font-size: 0.6875rem;
-            color: var(--text-muted);
+        .segment-pill.low {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--danger);
         }
 
-        .history-time {
-            font-size: 0.6875rem;
-            color: var(--text-muted);
+        .segment-pill.mid {
+            background: rgba(234, 179, 8, 0.15);
+            color: var(--warning);
+        }
+
+        .segment-pill.high {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--success);
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            max-height: 400px;
+            overflow-y: auto;
         }
 
         /* Spinner */
@@ -689,14 +854,27 @@
         /* Footer */
         .footer {
             text-align: center;
-            padding: 2rem 1rem;
+            padding: 1.5rem;
             color: var(--text-muted);
             font-size: 0.75rem;
+        }
+
+        /* Print styles for PDF export */
+        @media print {
+            body {
+                background: white;
+                color: black;
+            }
+
+            .no-print {
+                display: none !important;
+            }
         }
 
         /* Scrollbar */
         ::-webkit-scrollbar {
             width: 6px;
+            height: 6px;
         }
 
         ::-webkit-scrollbar-track {
@@ -706,6 +884,43 @@
         ::-webkit-scrollbar-thumb {
             background: var(--border);
             border-radius: 3px;
+        }
+
+        /* PDF Report styles */
+        .pdf-report {
+            background: white;
+            color: #1e293b;
+            padding: 2rem;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .pdf-report h1 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: #0ea5e9;
+        }
+
+        .pdf-report h2 {
+            font-size: 1rem;
+            margin: 1.5rem 0 0.75rem;
+            color: #334155;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 0.5rem;
+        }
+
+        .pdf-report .metric {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .pdf-report .metric-label {
+            color: #64748b;
+        }
+
+        .pdf-report .metric-value {
+            font-weight: 600;
         }
     </style>
 </head>
@@ -724,185 +939,261 @@
             </div>
             <div class="header-actions">
                 <button class="icon-btn" onclick="toggleTheme()" title="Toggle theme">
-                    <i data-lucide="sun" id="theme-icon" style="width: 20px; height: 20px;"></i>
+                    <i data-lucide="sun" id="theme-icon" style="width: 18px; height: 18px;"></i>
                 </button>
             </div>
         </header>
 
-        <div class="main-grid">
-            <!-- Input Panel -->
-            <div class="card">
-                <div class="card-header">
-                    <i data-lucide="bar-chart-3" style="width: 20px; height: 20px; color: var(--primary);"></i>
-                    <h2>RFM Analysis</h2>
-                </div>
-                <div class="card-body">
-                    <!-- Model Selector -->
-                    <div class="model-tabs">
-                        <div class="model-tab active" data-model="nn" onclick="selectModel('nn')">
-                            <div class="model-tab-icon">
-                                <i data-lucide="brain" style="width: 18px; height: 18px;"></i>
-                            </div>
-                            <div class="model-tab-label">Neural Net</div>
-                        </div>
-                        <div class="model-tab" data-model="gb" onclick="selectModel('gb')">
-                            <div class="model-tab-icon">
-                                <i data-lucide="trending-up" style="width: 18px; height: 18px;"></i>
-                            </div>
-                            <div class="model-tab-label">Gradient Boost</div>
-                        </div>
-                        <div class="model-tab" data-model="rf" onclick="selectModel('rf')">
-                            <div class="model-tab-icon">
-                                <i data-lucide="git-branch" style="width: 18px; height: 18px;"></i>
-                            </div>
-                            <div class="model-tab-label">Random Forest</div>
-                        </div>
+        <!-- Main Tabs -->
+        <div class="main-tabs">
+            <button class="main-tab active" onclick="switchTab('single')">
+                <i data-lucide="user" style="width: 18px; height: 18px;"></i>
+                <span>Single Customer</span>
+            </button>
+            <button class="main-tab" onclick="switchTab('batch')">
+                <i data-lucide="users" style="width: 18px; height: 18px;"></i>
+                <span>Batch Analysis</span>
+            </button>
+        </div>
+
+        <!-- Single Customer Tab -->
+        <div id="tab-single" class="tab-content active">
+            <div class="grid-2">
+                <!-- Input Panel -->
+                <div class="card">
+                    <div class="card-header">
+                        <i data-lucide="bar-chart-3" style="width: 18px; height: 18px; color: var(--primary);"></i>
+                        <h2>RFM Analysis</h2>
                     </div>
+                    <div class="card-body">
+                        <div class="model-tabs">
+                            <div class="model-tab active" data-model="nn" onclick="selectModel('nn')">
+                                <div class="model-tab-icon"><i data-lucide="brain"
+                                        style="width: 16px; height: 16px;"></i></div>
+                                <div class="model-tab-label">Neural Net</div>
+                            </div>
+                            <div class="model-tab" data-model="gb" onclick="selectModel('gb')">
+                                <div class="model-tab-icon"><i data-lucide="trending-up"
+                                        style="width: 16px; height: 16px;"></i></div>
+                                <div class="model-tab-label">Gradient Boost</div>
+                            </div>
+                            <div class="model-tab" data-model="rf" onclick="selectModel('rf')">
+                                <div class="model-tab-icon"><i data-lucide="git-branch"
+                                        style="width: 16px; height: 16px;"></i></div>
+                                <div class="model-tab-label">Random Forest</div>
+                            </div>
+                        </div>
 
-                    <form id="prediction-form">
-                        <div class="form-group">
-                            <label class="form-label">
-                                <i data-lucide="clock" style="width: 14px; height: 14px;"></i>
-                                Recency (Days)
-                            </label>
-                            <input type="number" class="form-input" id="recency" placeholder="e.g., 30" required
-                                min="0">
-                            <p class="form-hint">Days since customer's last purchase</p>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">
-                                <i data-lucide="repeat" style="width: 14px; height: 14px;"></i>
-                                Frequency (Count)
-                            </label>
-                            <input type="number" class="form-input" id="frequency" placeholder="e.g., 5" required
-                                min="0">
-                            <p class="form-hint">Total number of transactions</p>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">
-                                <i data-lucide="pound-sterling" style="width: 14px; height: 14px;"></i>
-                                Monetary Value (£)
-                            </label>
-                            <input type="number" class="form-input" id="monetary" placeholder="e.g., 500" required
-                                min="0" step="0.01">
-                            <p class="form-hint">Total spending amount in GBP</p>
-                        </div>
-                        <button type="submit" class="btn-primary" id="submit-btn">
-                            <i data-lucide="sparkles" style="width: 18px; height: 18px;"></i>
-                            <span id="btn-text">Classify Customer</span>
-                            <div class="spinner" id="spinner" style="display: none;"></div>
-                        </button>
-                    </form>
+                        <form id="prediction-form">
+                            <div class="form-group">
+                                <label class="form-label"><i data-lucide="clock" style="width: 14px; height: 14px;"></i>
+                                    Recency (Days)</label>
+                                <input type="number" class="form-input" id="recency" placeholder="e.g., 30" required
+                                    min="0">
+                                <p class="form-hint">Days since last purchase</p>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label"><i data-lucide="repeat"
+                                        style="width: 14px; height: 14px;"></i> Frequency</label>
+                                <input type="number" class="form-input" id="frequency" placeholder="e.g., 5" required
+                                    min="0">
+                                <p class="form-hint">Total transactions</p>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label"><i data-lucide="pound-sterling"
+                                        style="width: 14px; height: 14px;"></i> Monetary (£)</label>
+                                <input type="number" class="form-input" id="monetary" placeholder="e.g., 500" required
+                                    min="0" step="0.01">
+                                <p class="form-hint">Total spending</p>
+                            </div>
+                            <button type="submit" class="btn btn-primary" id="submit-btn">
+                                <i data-lucide="sparkles" style="width: 18px; height: 18px;"></i>
+                                <span id="btn-text">Classify Customer</span>
+                                <div class="spinner" id="spinner" style="display: none;"></div>
+                            </button>
+                        </form>
 
-                    <div class="sample-btns">
-                        <button type="button" class="sample-btn" onclick="fillSample('low')">
-                            <span class="sample-dot" style="background: var(--danger);"></span>
-                            <span>Low Sample</span>
-                        </button>
-                        <button type="button" class="sample-btn" onclick="fillSample('mid')">
-                            <span class="sample-dot" style="background: var(--warning);"></span>
-                            <span>Mid Sample</span>
-                        </button>
-                        <button type="button" class="sample-btn" onclick="fillSample('high')">
-                            <span class="sample-dot" style="background: var(--success);"></span>
-                            <span>High Sample</span>
-                        </button>
-                    </div>
-
-                    <!-- History -->
-                    <div class="history-section" id="history-section" style="display: none;">
-                        <div class="history-title">
-                            <h3>
-                                <i data-lucide="history" style="width: 16px; height: 16px;"></i>
-                                Recent Predictions
-                            </h3>
-                            <button class="history-clear" onclick="clearHistory()">Clear</button>
+                        <div class="sample-btns">
+                            <button type="button" class="sample-btn" onclick="fillSample('low')">
+                                <span class="sample-dot" style="background: var(--danger);"></span>
+                                <span>Low Sample</span>
+                            </button>
+                            <button type="button" class="sample-btn" onclick="fillSample('mid')">
+                                <span class="sample-dot" style="background: var(--warning);"></span>
+                                <span>Mid Sample</span>
+                            </button>
+                            <button type="button" class="sample-btn" onclick="fillSample('high')">
+                                <span class="sample-dot" style="background: var(--success);"></span>
+                                <span>High Sample</span>
+                            </button>
                         </div>
-                        <div class="history-list" id="history-list"></div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Results Panel -->
-            <div class="card">
-                <div class="card-header">
-                    <i data-lucide="target" style="width: 20px; height: 20px; color: var(--primary);"></i>
-                    <h2>Classification Result</h2>
-                </div>
-                <div class="card-body">
-                    <div id="result-placeholder" class="result-placeholder">
-                        <div class="result-placeholder-icon">
-                            <i data-lucide="scan" style="width: 28px; height: 28px;"></i>
-                        </div>
-                        <p>Enter RFM data to classify customer segment</p>
+                <!-- Results Panel -->
+                <div class="card">
+                    <div class="card-header">
+                        <i data-lucide="target" style="width: 18px; height: 18px; color: var(--primary);"></i>
+                        <h2>Analysis Result</h2>
                     </div>
-
-                    <div id="result-container" class="result-container">
-                        <!-- Segment Result -->
-                        <div class="segment-result">
-                            <div class="segment-icon" id="segment-icon">
-                                <i data-lucide="user" id="segment-lucide" style="width: 24px; height: 24px;"></i>
+                    <div class="card-body">
+                        <div id="result-placeholder" class="result-placeholder">
+                            <div class="result-placeholder-icon">
+                                <i data-lucide="scan" style="width: 24px; height: 24px;"></i>
                             </div>
-                            <div class="segment-info">
-                                <h3 id="segment-name">-</h3>
-                                <span id="model-used">-</span>
-                            </div>
-                            <div class="confidence-badge" id="confidence-badge">-</div>
+                            <p>Enter RFM data to analyze customer</p>
                         </div>
 
-                        <!-- Reasoning -->
-                        <div class="reasoning-section">
-                            <div class="reasoning-title">
-                                <i data-lucide="lightbulb"
-                                    style="width: 16px; height: 16px; color: var(--warning);"></i>
-                                Why this classification?
+                        <div id="result-container" class="result-container">
+                            <div class="segment-result">
+                                <div class="segment-icon" id="segment-icon">
+                                    <i data-lucide="user" id="segment-lucide" style="width: 22px; height: 22px;"></i>
+                                </div>
+                                <div class="segment-info">
+                                    <h3 id="segment-name">-</h3>
+                                    <span id="model-used">-</span>
+                                </div>
+                                <div class="confidence-badge" id="confidence-badge">-</div>
                             </div>
-                            <p class="reasoning-text" id="reasoning-text">-</p>
-                            <div class="feature-bars" id="feature-bars"></div>
-                        </div>
 
-                        <!-- Charts -->
-                        <div class="charts-grid">
-                            <div class="chart-card">
-                                <div class="chart-title">Probability Distribution</div>
-                                <div class="chart-container">
-                                    <canvas id="probability-chart"></canvas>
+                            <!-- Customer Insights -->
+                            <div class="insights-grid" id="insights-grid"></div>
+
+                            <!-- Reasoning -->
+                            <div class="reasoning-section">
+                                <div class="reasoning-title">
+                                    <i data-lucide="lightbulb"
+                                        style="width: 14px; height: 14px; color: var(--warning);"></i>
+                                    Analysis Summary
+                                </div>
+                                <p class="reasoning-text" id="reasoning-text">-</p>
+                            </div>
+
+                            <!-- Charts -->
+                            <div class="charts-grid">
+                                <div class="chart-card">
+                                    <div class="chart-title">Probability Distribution</div>
+                                    <div class="chart-container"><canvas id="probability-chart"></canvas></div>
+                                </div>
+                                <div class="chart-card">
+                                    <div class="chart-title">Model Confidence</div>
+                                    <div class="chart-container"><canvas id="comparison-chart"></canvas></div>
                                 </div>
                             </div>
-                            <div class="chart-card">
-                                <div class="chart-title">Model Confidence</div>
-                                <div class="chart-container">
-                                    <canvas id="comparison-chart"></canvas>
-                                </div>
+
+                            <!-- Model Comparison -->
+                            <div class="model-comparison" id="model-comparison"></div>
+
+                            <!-- Export Actions -->
+                            <div class="export-actions">
+                                <button class="btn btn-secondary" onclick="exportPDF()">
+                                    <i data-lucide="file-text" style="width: 16px; height: 16px;"></i>
+                                    Export PDF
+                                </button>
                             </div>
                         </div>
-
-                        <!-- Model Comparison -->
-                        <div class="model-comparison" id="model-comparison"></div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <footer class="footer">
-            Customer Intelligence Platform · CSE 5632 Neural Networks
-        </footer>
+        <!-- Batch Tab -->
+        <div id="tab-batch" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <i data-lucide="upload" style="width: 18px; height: 18px; color: var(--primary);"></i>
+                    <h2>Batch Customer Analysis</h2>
+                </div>
+                <div class="card-body">
+                    <div id="upload-section">
+                        <div class="upload-zone" id="upload-zone"
+                            onclick="document.getElementById('file-input').click()">
+                            <div class="upload-icon">
+                                <i data-lucide="upload-cloud" style="width: 48px; height: 48px;"></i>
+                            </div>
+                            <p class="upload-text">Drop CSV file here or click to upload</p>
+                            <p class="upload-hint">Required columns: recency, frequency, monetary (optional:
+                                customer_id)</p>
+                        </div>
+                        <input type="file" id="file-input" accept=".csv" onchange="handleFileUpload(event)">
+
+                        <div style="margin-top: 1rem;">
+                            <p class="form-hint" style="margin-bottom: 0.5rem;">Select Model:</p>
+                            <div class="model-tabs">
+                                <div class="model-tab active" data-model="nn" onclick="selectBatchModel('nn')">
+                                    <div class="model-tab-icon"><i data-lucide="brain"
+                                            style="width: 16px; height: 16px;"></i></div>
+                                    <div class="model-tab-label">Neural Net</div>
+                                </div>
+                                <div class="model-tab" data-model="gb" onclick="selectBatchModel('gb')">
+                                    <div class="model-tab-icon"><i data-lucide="trending-up"
+                                            style="width: 16px; height: 16px;"></i></div>
+                                    <div class="model-tab-label">Gradient Boost</div>
+                                </div>
+                                <div class="model-tab" data-model="rf" onclick="selectBatchModel('rf')">
+                                    <div class="model-tab-icon"><i data-lucide="git-branch"
+                                            style="width: 16px; height: 16px;"></i></div>
+                                    <div class="model-tab-label">Random Forest</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="batch-results" style="display: none;">
+                        <div class="batch-summary" id="batch-summary"></div>
+
+                        <div class="table-wrapper">
+                            <table class="batch-table">
+                                <thead>
+                                    <tr>
+                                        <th>Customer ID</th>
+                                        <th>Recency</th>
+                                        <th>Frequency</th>
+                                        <th>Monetary</th>
+                                        <th>Segment</th>
+                                        <th>Grade</th>
+                                        <th>Confidence</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="batch-table-body"></tbody>
+                            </table>
+                        </div>
+
+                        <div class="export-actions" style="margin-top: 1rem;">
+                            <button class="btn btn-success" onclick="exportBatchCSV()">
+                                <i data-lucide="download" style="width: 16px; height: 16px;"></i>
+                                Download Results CSV
+                            </button>
+                            <button class="btn btn-secondary" onclick="resetBatch()">
+                                <i data-lucide="refresh-cw" style="width: 16px; height: 16px;"></i>
+                                New Analysis
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">Customer Intelligence Platform · CSE 5632 Neural Networks</footer>
     </div>
+
+    <!-- Hidden PDF Template -->
+    <div id="pdf-template" style="display: none;"></div>
 
     <script>
         let probabilityChart = null;
         let comparisonChart = null;
         let selectedModel = 'nn';
-        let history = JSON.parse(localStorage.getItem('predictionHistory') || '[]');
+        let batchModel = 'nn';
+        let currentResult = null;
+        let batchResults = null;
 
-        // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
             loadTheme();
-            renderHistory();
+            setupDragDrop();
         });
 
-        // Theme
         function toggleTheme() {
             const current = document.body.getAttribute('data-theme');
             const newTheme = current === 'light' ? 'dark' : 'light';
@@ -924,32 +1215,39 @@
             lucide.createIcons();
         }
 
-        // Model Selection
+        function switchTab(tab) {
+            document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            event.target.closest('.main-tab').classList.add('active');
+            document.getElementById('tab-' + tab).classList.add('active');
+        }
+
         function selectModel(model) {
             selectedModel = model;
-            document.querySelectorAll('.model-tab').forEach(tab => {
+            document.querySelectorAll('#tab-single .model-tab').forEach(tab => {
                 tab.classList.toggle('active', tab.dataset.model === model);
             });
             lucide.createIcons();
         }
 
-        // Sample Data
-        function fillSample(type) {
-            const samples = {
-                low: { recency: 180, frequency: 1, monetary: 150 },
-                mid: { recency: 45, frequency: 4, monetary: 800 },
-                high: { recency: 10, frequency: 15, monetary: 5000 }
-            };
-            const sample = samples[type];
-            document.getElementById('recency').value = sample.recency;
-            document.getElementById('frequency').value = sample.frequency;
-            document.getElementById('monetary').value = sample.monetary;
+        function selectBatchModel(model) {
+            batchModel = model;
+            document.querySelectorAll('#tab-batch .model-tab').forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.model === model);
+            });
+            lucide.createIcons();
         }
 
-        // Form Submission
+        function fillSample(type) {
+            const samples = { low: { r: 180, f: 1, m: 150 }, mid: { r: 45, f: 4, m: 800 }, high: { r: 10, f: 15, m: 5000 } };
+            const s = samples[type];
+            document.getElementById('recency').value = s.r;
+            document.getElementById('frequency').value = s.f;
+            document.getElementById('monetary').value = s.m;
+        }
+
         document.getElementById('prediction-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-
             const btnText = document.getElementById('btn-text');
             const spinner = document.getElementById('spinner');
             const submitBtn = document.getElementById('submit-btn');
@@ -971,18 +1269,12 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
                 });
-
                 const result = await response.json();
-
-                if (result.error) {
-                    alert('Error: ' + result.error);
-                    return;
-                }
-
+                if (result.error) { alert('Error: ' + result.error); return; }
+                currentResult = result;
                 displayResult(result);
-                saveToHistory(result);
             } catch (error) {
-                alert('Connection error. Please try again.');
+                alert('Connection error');
             } finally {
                 btnText.style.display = 'inline';
                 spinner.style.display = 'none';
@@ -994,18 +1286,18 @@
             document.getElementById('result-placeholder').style.display = 'none';
             document.getElementById('result-container').classList.add('visible');
 
-            // Segment
             const segmentIcon = document.getElementById('segment-icon');
-            const segmentClasses = ['low', 'mid', 'high'];
-            segmentClasses.forEach(c => segmentIcon.classList.remove(c));
-            segmentIcon.classList.add(segmentClasses[result.segment]);
+            ['low', 'mid', 'high'].forEach(c => segmentIcon.classList.remove(c));
+            segmentIcon.classList.add(['low', 'mid', 'high'][result.segment]);
 
             const icons = ['user-x', 'user', 'user-check'];
             document.getElementById('segment-lucide').setAttribute('data-lucide', icons[result.segment]);
-
             document.getElementById('segment-name').textContent = result.segment_name;
             document.getElementById('model-used').textContent = result.model_used;
             document.getElementById('confidence-badge').textContent = result.confidence + '%';
+
+            // Insights
+            displayInsights(result.insights);
 
             // Reasoning
             generateReasoning(result);
@@ -1013,88 +1305,56 @@
             // Charts
             updateCharts(result.probabilities, result.all_models);
 
-            // Model Comparison
+            // Model comparison
             displayComparison(result.all_models);
 
             lucide.createIcons();
         }
 
-        function generateReasoning(result) {
-            const input = result.input;
-            const segment = result.segment;
-
-            let reasons = [];
-            let factors = [];
-
-            // Analyze Recency
-            if (input.recency <= 30) {
-                reasons.push('recent purchase activity');
-                factors.push({ name: 'Recency', value: 90, color: 'var(--success)' });
-            } else if (input.recency <= 90) {
-                reasons.push('moderate recency');
-                factors.push({ name: 'Recency', value: 50, color: 'var(--warning)' });
-            } else {
-                reasons.push('low recent engagement');
-                factors.push({ name: 'Recency', value: 20, color: 'var(--danger)' });
-            }
-
-            // Analyze Frequency
-            if (input.frequency >= 10) {
-                reasons.push('high purchase frequency');
-                factors.push({ name: 'Frequency', value: 90, color: 'var(--success)' });
-            } else if (input.frequency >= 3) {
-                reasons.push('moderate transaction count');
-                factors.push({ name: 'Frequency', value: 50, color: 'var(--warning)' });
-            } else {
-                reasons.push('low transaction frequency');
-                factors.push({ name: 'Frequency', value: 20, color: 'var(--danger)' });
-            }
-
-            // Analyze Monetary
-            if (input.monetary >= 2000) {
-                reasons.push('high total spending');
-                factors.push({ name: 'Monetary', value: 90, color: 'var(--success)' });
-            } else if (input.monetary >= 500) {
-                reasons.push('moderate spending level');
-                factors.push({ name: 'Monetary', value: 50, color: 'var(--warning)' });
-            } else {
-                reasons.push('lower spending amount');
-                factors.push({ name: 'Monetary', value: 20, color: 'var(--danger)' });
-            }
-
-            const descriptions = {
-                0: `This customer shows ${reasons.join(', ')}. Consider re-engagement campaigns to prevent churn.`,
-                1: `This customer demonstrates ${reasons.join(', ')}. Target them with upselling opportunities and loyalty programs.`,
-                2: `This customer exhibits ${reasons.join(', ')}. Prioritize VIP treatment with personalized offers and premium support.`
-            };
-
-            document.getElementById('reasoning-text').textContent = descriptions[segment];
-
-            // Feature bars
-            const barsHtml = factors.map(f => `
-                <div class="feature-bar">
-                    <span class="feature-label">${f.name}</span>
-                    <div class="feature-track">
-                        <div class="feature-fill" style="width: ${f.value}%; background: ${f.color};"></div>
-                    </div>
-                    <span class="feature-value" style="color: ${f.color};">${f.value}%</span>
+        function displayInsights(insights) {
+            const gradeClass = { 'A': 'grade-a', 'B': 'grade-b', 'C': 'grade-c', 'D': 'grade-d', 'F': 'grade-f' };
+            const html = `
+                <div class="insight-card">
+                    <div class="insight-grade ${gradeClass[insights.recency.grade]}">${insights.recency.grade}</div>
+                    <div class="insight-label">Recency</div>
+                    <div class="insight-value">${insights.recency.value} days</div>
+                    <div class="insight-percentile">Top ${100 - insights.recency.percentile}%</div>
                 </div>
-            `).join('');
-            document.getElementById('feature-bars').innerHTML = barsHtml;
+                <div class="insight-card">
+                    <div class="insight-grade ${gradeClass[insights.frequency.grade]}">${insights.frequency.grade}</div>
+                    <div class="insight-label">Frequency</div>
+                    <div class="insight-value">${insights.frequency.value} orders</div>
+                    <div class="insight-percentile">Top ${100 - insights.frequency.percentile}%</div>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-grade ${gradeClass[insights.monetary.grade]}">${insights.monetary.grade}</div>
+                    <div class="insight-label">Monetary</div>
+                    <div class="insight-value">£${insights.monetary.value.toLocaleString()}</div>
+                    <div class="insight-percentile">Top ${100 - insights.monetary.percentile}%</div>
+                </div>
+            `;
+            document.getElementById('insights-grid').innerHTML = html;
+        }
+
+        function generateReasoning(result) {
+            const insights = result.insights;
+            const grades = [insights.recency.grade, insights.frequency.grade, insights.monetary.grade];
+            const descriptions = {
+                0: `This customer has an overall grade of ${insights.overall_grade}. With ${result.input.recency} days since last purchase and only ${result.input.frequency} transaction(s), they show signs of disengagement. Recommend targeted re-activation campaigns.`,
+                1: `This customer has an overall grade of ${insights.overall_grade}. With moderate engagement (${result.input.frequency} transactions, £${result.input.monetary.toLocaleString()} spent), they represent growth potential. Focus on loyalty programs and cross-selling.`,
+                2: `This customer has an overall grade of ${insights.overall_grade}. With excellent engagement (${result.input.frequency} transactions, £${result.input.monetary.toLocaleString()} total spend, last purchase ${result.input.recency} days ago), they are a VIP. Prioritize retention with premium perks.`
+            };
+            document.getElementById('reasoning-text').textContent = descriptions[result.segment];
         }
 
         function displayComparison(allModels) {
             const labels = { nn: 'Neural Network', gb: 'Gradient Boosting', rf: 'Random Forest' };
             const icons = { nn: 'brain', gb: 'trending-up', rf: 'git-branch' };
-
             const html = Object.entries(allModels).map(([key, data]) => {
                 const conf = Math.max(data.probabilities.low, data.probabilities.mid, data.probabilities.high);
-                const isActive = key === selectedModel ? 'active' : '';
                 return `
-                    <div class="model-card ${isActive}">
-                        <div class="model-card-icon">
-                            <i data-lucide="${icons[key]}" style="width: 20px; height: 20px;"></i>
-                        </div>
+                    <div class="model-card ${key === selectedModel ? 'active' : ''}">
+                        <div class="model-card-icon"><i data-lucide="${icons[key]}" style="width: 18px; height: 18px;"></i></div>
                         <div class="model-card-name">${labels[key]}</div>
                         <div class="model-card-segment">${data.segment_name}</div>
                         <div class="model-card-conf">${conf.toFixed(1)}%</div>
@@ -1108,103 +1368,154 @@
         function updateCharts(probabilities, allModels) {
             const ctx1 = document.getElementById('probability-chart').getContext('2d');
             const ctx2 = document.getElementById('comparison-chart').getContext('2d');
-
             if (probabilityChart) probabilityChart.destroy();
             if (comparisonChart) comparisonChart.destroy();
 
             const isLight = document.body.getAttribute('data-theme') === 'light';
-            const gridColor = isLight ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)';
             const textColor = isLight ? '#64748b' : '#94a3b8';
 
             probabilityChart = new Chart(ctx1, {
                 type: 'doughnut',
                 data: {
                     labels: ['Low', 'Mid', 'High'],
-                    datasets: [{
-                        data: [probabilities.low, probabilities.mid, probabilities.high],
-                        backgroundColor: ['#ef4444', '#eab308', '#22c55e'],
-                        borderWidth: 0
-                    }]
+                    datasets: [{ data: [probabilities.low, probabilities.mid, probabilities.high], backgroundColor: ['#ef4444', '#eab308', '#22c55e'], borderWidth: 0 }]
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { position: 'bottom', labels: { color: textColor, font: { size: 10 } } } }
-                }
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: textColor, font: { size: 9 } } } } }
             });
 
-            const modelConfs = Object.values(allModels).map(m =>
-                Math.max(m.probabilities.low, m.probabilities.mid, m.probabilities.high)
-            );
-
+            const confs = Object.values(allModels).map(m => Math.max(m.probabilities.low, m.probabilities.mid, m.probabilities.high));
             comparisonChart = new Chart(ctx2, {
                 type: 'bar',
-                data: {
-                    labels: ['NN', 'GB', 'RF'],
-                    datasets: [{
-                        data: modelConfs,
-                        backgroundColor: ['#0ea5e9', '#6366f1', '#8b5cf6'],
-                        borderRadius: 4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { beginAtZero: true, max: 100, grid: { color: gridColor }, ticks: { color: textColor, font: { size: 10 } } },
-                        x: { grid: { display: false }, ticks: { color: textColor, font: { size: 10 } } }
-                    }
-                }
+                data: { labels: ['NN', 'GB', 'RF'], datasets: [{ data: confs, backgroundColor: ['#0ea5e9', '#6366f1', '#8b5cf6'], borderRadius: 4 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100, ticks: { color: textColor, font: { size: 9 } } }, x: { ticks: { color: textColor, font: { size: 9 } } } } }
             });
         }
 
-        // History
-        function saveToHistory(result) {
-            const item = {
-                segment: result.segment,
-                segment_name: result.segment_name,
-                input: result.input,
-                time: new Date().toLocaleTimeString()
-            };
-            history.unshift(item);
-            if (history.length > 10) history.pop();
-            localStorage.setItem('predictionHistory', JSON.stringify(history));
-            renderHistory();
-        }
-
-        function renderHistory() {
-            if (history.length === 0) {
-                document.getElementById('history-section').style.display = 'none';
-                return;
-            }
-            document.getElementById('history-section').style.display = 'block';
-
-            const colors = ['var(--danger)', 'var(--warning)', 'var(--success)'];
-            const html = history.map((item, i) => `
-                <div class="history-item" onclick="loadHistory(${i})">
-                    <span class="history-dot" style="background: ${colors[item.segment]};"></span>
-                    <div class="history-details">
-                        <div class="history-segment">${item.segment_name}</div>
-                        <div class="history-rfm">R:${item.input.recency} F:${item.input.frequency} M:£${item.input.monetary}</div>
-                    </div>
-                    <span class="history-time">${item.time}</span>
+        function exportPDF() {
+            if (!currentResult) return;
+            const r = currentResult;
+            const html = `
+                <div class="pdf-report">
+                    <h1>Customer Classification Report</h1>
+                    <h2>Classification Result</h2>
+                    <div class="metric"><span class="metric-label">Segment</span><span class="metric-value">${r.segment_name}</span></div>
+                    <div class="metric"><span class="metric-label">Confidence</span><span class="metric-value">${r.confidence}%</span></div>
+                    <div class="metric"><span class="metric-label">Model Used</span><span class="metric-value">${r.model_used}</span></div>
+                    <h2>Customer Metrics</h2>
+                    <div class="metric"><span class="metric-label">Recency</span><span class="metric-value">${r.input.recency} days</span></div>
+                    <div class="metric"><span class="metric-label">Frequency</span><span class="metric-value">${r.input.frequency} orders</span></div>
+                    <div class="metric"><span class="metric-label">Monetary</span><span class="metric-value">£${r.input.monetary.toLocaleString()}</span></div>
+                    <h2>Customer Insights</h2>
+                    <div class="metric"><span class="metric-label">Recency Grade</span><span class="metric-value">${r.insights.recency.grade} (Top ${100 - r.insights.recency.percentile}%)</span></div>
+                    <div class="metric"><span class="metric-label">Frequency Grade</span><span class="metric-value">${r.insights.frequency.grade} (Top ${100 - r.insights.frequency.percentile}%)</span></div>
+                    <div class="metric"><span class="metric-label">Monetary Grade</span><span class="metric-value">${r.insights.monetary.grade} (Top ${100 - r.insights.monetary.percentile}%)</span></div>
+                    <div class="metric"><span class="metric-label">Overall Grade</span><span class="metric-value">${r.insights.overall_grade}</span></div>
+                    <h2>Recommendation</h2>
+                    <p>${r.description}</p>
                 </div>
-            `).join('');
-            document.getElementById('history-list').innerHTML = html;
+            `;
+            const container = document.getElementById('pdf-template');
+            container.innerHTML = html;
+            container.style.display = 'block';
+
+            html2pdf().set({
+                margin: 10,
+                filename: 'customer_classification_report.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            }).from(container).save().then(() => {
+                container.style.display = 'none';
+            });
         }
 
-        function loadHistory(index) {
-            const item = history[index];
-            document.getElementById('recency').value = item.input.recency;
-            document.getElementById('frequency').value = item.input.frequency;
-            document.getElementById('monetary').value = item.input.monetary;
+        // Batch functionality
+        function setupDragDrop() {
+            const zone = document.getElementById('upload-zone');
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(e => zone.addEventListener(e, ev => ev.preventDefault()));
+            ['dragenter', 'dragover'].forEach(e => zone.addEventListener(e, () => zone.classList.add('dragover')));
+            ['dragleave', 'drop'].forEach(e => zone.addEventListener(e, () => zone.classList.remove('dragover')));
+            zone.addEventListener('drop', e => {
+                const file = e.dataTransfer.files[0];
+                if (file) processBatchFile(file);
+            });
         }
 
-        function clearHistory() {
-            history = [];
-            localStorage.removeItem('predictionHistory');
-            renderHistory();
+        function handleFileUpload(e) {
+            const file = e.target.files[0];
+            if (file) processBatchFile(file);
+        }
+
+        async function processBatchFile(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('model', batchModel);
+
+            try {
+                const response = await fetch('/batch', { method: 'POST', body: formData });
+                const data = await response.json();
+                if (data.error) { alert('Error: ' + data.error); return; }
+                batchResults = data;
+                displayBatchResults(data);
+            } catch (error) {
+                alert('Error processing file');
+            }
+        }
+
+        function displayBatchResults(data) {
+            document.getElementById('upload-section').style.display = 'none';
+            document.getElementById('batch-results').style.display = 'block';
+
+            const s = data.summary;
+            document.getElementById('batch-summary').innerHTML = `
+                <div class="summary-card"><div class="summary-value">${s.total}</div><div class="summary-label">Total Customers</div></div>
+                <div class="summary-card"><div class="summary-value" style="color: var(--danger);">${s.low_value}</div><div class="summary-label">Low Value</div></div>
+                <div class="summary-card"><div class="summary-value" style="color: var(--warning);">${s.mid_value}</div><div class="summary-label">Mid Value</div></div>
+                <div class="summary-card"><div class="summary-value" style="color: var(--success);">${s.high_value}</div><div class="summary-label">High Value</div></div>
+            `;
+
+            const segmentClass = { 'Low Value': 'low', 'Mid Value': 'mid', 'High Value': 'high' };
+            const rows = data.results.map(r => {
+                if (r.error) return `<tr><td>${r.customer_id}</td><td colspan="6" style="color: var(--danger);">Error: ${r.error}</td></tr>`;
+                return `
+                    <tr>
+                        <td>${r.customer_id}</td>
+                        <td>${r.recency}</td>
+                        <td>${r.frequency}</td>
+                        <td>£${r.monetary.toLocaleString()}</td>
+                        <td><span class="segment-pill ${segmentClass[r.segment]}">${r.segment}</span></td>
+                        <td>${r.insights?.overall_grade || '-'}</td>
+                        <td>${r.confidence}%</td>
+                    </tr>
+                `;
+            }).join('');
+            document.getElementById('batch-table-body').innerHTML = rows;
+        }
+
+        async function exportBatchCSV() {
+            if (!batchResults) return;
+            try {
+                const response = await fetch('/export-csv', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ results: batchResults.results })
+                });
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'customer_classification_results.csv';
+                a.click();
+            } catch (error) {
+                alert('Export failed');
+            }
+        }
+
+        function resetBatch() {
+            document.getElementById('upload-section').style.display = 'block';
+            document.getElementById('batch-results').style.display = 'none';
+            document.getElementById('file-input').value = '';
+            batchResults = null;
         }
     </script>
 </body>
