@@ -3,34 +3,40 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer Intelligence | RFM Classification</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Customer Intelligence Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
-            --bg-primary: #0f0f23;
-            --bg-secondary: #1a1a2e;
-            --bg-card: rgba(255, 255, 255, 0.03);
-            --text-primary: #ffffff;
-            --text-secondary: #a0a0b0;
-            --accent: #6366f1;
-            --accent-glow: rgba(99, 102, 241, 0.4);
-            --success: #10b981;
-            --warning: #f59e0b;
+            --primary: #0ea5e9;
+            --primary-dark: #0284c7;
+            --secondary: #6366f1;
+            --success: #22c55e;
+            --warning: #eab308;
             --danger: #ef4444;
-            --border: rgba(255, 255, 255, 0.08);
-            --glass: rgba(255, 255, 255, 0.05);
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border: #334155;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
         }
 
         [data-theme="light"] {
             --bg-primary: #f8fafc;
             --bg-secondary: #ffffff;
-            --bg-card: rgba(0, 0, 0, 0.02);
-            --text-primary: #1e293b;
-            --text-secondary: #64748b;
-            --border: rgba(0, 0, 0, 0.08);
-            --glass: rgba(0, 0, 0, 0.02);
+            --bg-tertiary: #e2e8f0;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --border: #e2e8f0;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
         }
 
         * {
@@ -39,18 +45,31 @@
             box-sizing: border-box;
         }
 
+        html {
+            font-size: 16px;
+            -webkit-text-size-adjust: 100%;
+        }
+
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background: var(--bg-primary);
             color: var(--text-primary);
             min-height: 100vh;
-            transition: all 0.3s ease;
+            min-height: -webkit-fill-available;
+            transition: background 0.3s, color 0.3s;
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1280px;
             margin: 0 auto;
-            padding: 2rem;
+            padding: 1.5rem;
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 1rem;
+            }
         }
 
         /* Header */
@@ -59,87 +78,72 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 2rem;
-            flex-wrap: wrap;
             gap: 1rem;
+            flex-wrap: wrap;
         }
 
-        .logo {
+        .brand {
             display: flex;
             align-items: center;
             gap: 0.75rem;
         }
 
-        .logo-icon {
-            width: 48px;
-            height: 48px;
-            background: linear-gradient(135deg, var(--accent), #8b5cf6);
-            border-radius: 12px;
+        .brand-icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
-            box-shadow: 0 8px 32px var(--accent-glow);
+            color: white;
         }
 
-        .logo-text h1 {
-            font-size: 1.25rem;
-            font-weight: 600;
+        .brand-text h1 {
+            font-size: 1.125rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
         }
 
-        .logo-text span {
+        .brand-text span {
             font-size: 0.75rem;
-            color: var(--text-secondary);
+            color: var(--text-muted);
         }
 
-        .header-controls {
+        .header-actions {
             display: flex;
-            gap: 1rem;
             align-items: center;
+            gap: 0.75rem;
         }
 
-        /* Theme Toggle */
-        .theme-toggle {
-            width: 60px;
-            height: 32px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            cursor: pointer;
-            position: relative;
-            transition: all 0.3s ease;
-        }
-
-        .theme-toggle::before {
-            content: '🌙';
-            position: absolute;
-            left: 4px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 24px;
-            height: 24px;
-            background: var(--accent);
-            border-radius: 50%;
+        .icon-btn {
+            width: 44px;
+            height: 44px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
-            transition: all 0.3s ease;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
         }
 
-        [data-theme="light"] .theme-toggle::before {
-            content: '☀️';
-            left: calc(100% - 28px);
-            background: #fbbf24;
+        .icon-btn:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
         }
 
-        /* Main Grid */
+        /* Main Layout */
         .main-grid {
             display: grid;
-            grid-template-columns: 1fr 1.8fr;
-            gap: 2rem;
+            grid-template-columns: 400px 1fr;
+            gap: 1.5rem;
+            align-items: start;
         }
 
-        @media (max-width: 1000px) {
+        @media (max-width: 1024px) {
             .main-grid {
                 grid-template-columns: 1fr;
             }
@@ -149,125 +153,149 @@
         .card {
             background: var(--bg-secondary);
             border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 1.5rem;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
         }
 
-        .card:hover {
-            border-color: var(--accent);
-            box-shadow: 0 0 40px var(--accent-glow);
-        }
-
-        .card-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 1.25rem;
+        .card-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
+            gap: 0.75rem;
+        }
+
+        .card-header h2 {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        /* Model Selector */
+        .model-tabs {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
             gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .model-tab {
+            padding: 0.875rem 0.5rem;
+            background: var(--bg-tertiary);
+            border: 2px solid transparent;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .model-tab:hover {
+            border-color: var(--primary);
+        }
+
+        .model-tab.active {
+            background: rgba(14, 165, 233, 0.1);
+            border-color: var(--primary);
+        }
+
+        .model-tab-icon {
+            width: 32px;
+            height: 32px;
+            margin: 0 auto 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            color: var(--primary);
+        }
+
+        .model-tab.active .model-tab-icon {
+            background: var(--primary);
+            color: white;
+        }
+
+        .model-tab-label {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .model-tab.active .model-tab-label {
+            color: var(--primary);
         }
 
         /* Form */
         .form-group {
-            margin-bottom: 1rem;
+            margin-bottom: 1.25rem;
         }
 
         .form-label {
-            display: block;
-            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
             font-weight: 500;
-            margin-bottom: 0.4rem;
             color: var(--text-secondary);
+            margin-bottom: 0.5rem;
         }
 
-        .form-input,
-        .form-select {
+        .form-input {
             width: 100%;
             padding: 0.875rem 1rem;
-            background: var(--bg-card);
+            background: var(--bg-tertiary);
             border: 1px solid var(--border);
             border-radius: 10px;
             color: var(--text-primary);
-            font-size: 0.95rem;
+            font-size: 1rem;
             font-family: inherit;
-            transition: all 0.3s ease;
+            transition: all 0.2s;
+            -webkit-appearance: none;
         }
 
-        .form-input:focus,
-        .form-select:focus {
+        .form-input:focus {
             outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 4px var(--accent-glow);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
         }
 
         .form-hint {
-            font-size: 0.7rem;
-            color: var(--text-secondary);
-            margin-top: 0.3rem;
-        }
-
-        /* Model Selector */
-        .model-selector {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .model-btn {
-            padding: 0.75rem;
-            background: var(--bg-card);
-            border: 2px solid var(--border);
-            border-radius: 10px;
-            color: var(--text-secondary);
-            font-size: 0.8rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: center;
-        }
-
-        .model-btn:hover {
-            border-color: var(--accent);
-            color: var(--text-primary);
-        }
-
-        .model-btn.active {
-            border-color: var(--accent);
-            background: var(--accent);
-            color: white;
-        }
-
-        .model-btn .icon {
-            font-size: 1.25rem;
-            display: block;
-            margin-bottom: 0.25rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.375rem;
         }
 
         /* Button */
         .btn-primary {
             width: 100%;
             padding: 1rem;
-            background: linear-gradient(135deg, var(--accent), #8b5cf6);
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             border: none;
-            border-radius: 12px;
+            border-radius: 10px;
             color: white;
-            font-size: 1rem;
+            font-size: 0.9375rem;
             font-weight: 600;
             font-family: inherit;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
+            min-height: 48px;
         }
 
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 40px var(--accent-glow);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
         }
 
         .btn-primary:disabled {
@@ -276,51 +304,74 @@
             transform: none;
         }
 
-        /* Quick Actions */
-        .quick-actions {
+        /* Sample Buttons */
+        .sample-btns {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 0.5rem;
             margin-top: 1rem;
         }
 
-        .quick-btn {
-            padding: 0.6rem;
-            background: var(--bg-card);
+        .sample-btn {
+            padding: 0.625rem;
+            background: var(--bg-tertiary);
             border: 1px solid var(--border);
             border-radius: 8px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s;
             text-align: center;
+            min-height: 44px;
+        }
+
+        .sample-btn:hover {
+            border-color: var(--primary);
+        }
+
+        .sample-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 0.375rem;
+        }
+
+        .sample-btn span {
             font-size: 0.75rem;
             color: var(--text-secondary);
         }
 
-        .quick-btn:hover {
-            border-color: var(--accent);
-            transform: translateY(-2px);
-        }
-
-        .quick-btn .icon {
-            font-size: 1.25rem;
-            display: block;
-            margin-bottom: 0.2rem;
-        }
-
         /* Results */
+        .result-placeholder {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            color: var(--text-muted);
+        }
+
+        .result-placeholder-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 1rem;
+            background: var(--bg-tertiary);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+        }
+
         .result-container {
             display: none;
         }
 
         .result-container.visible {
             display: block;
-            animation: fadeIn 0.5s ease;
+            animation: fadeIn 0.4s ease;
         }
 
         @keyframes fadeIn {
             from {
                 opacity: 0;
-                transform: translateY(20px);
+                transform: translateY(10px);
             }
 
             to {
@@ -329,157 +380,294 @@
             }
         }
 
-        .segment-badge {
-            display: inline-flex;
+        /* Segment Result */
+        .segment-result {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.25rem;
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+        }
+
+        .segment-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .segment-icon.low {
+            background: var(--danger);
+        }
+
+        .segment-icon.mid {
+            background: var(--warning);
+        }
+
+        .segment-icon.high {
+            background: var(--success);
+        }
+
+        .segment-info h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .segment-info span {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .confidence-badge {
+            margin-left: auto;
+            padding: 0.375rem 0.75rem;
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        /* Reasoning Section */
+        .reasoning-section {
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .reasoning-title {
+            display: flex;
             align-items: center;
             gap: 0.5rem;
-            padding: 0.6rem 1.25rem;
-            border-radius: 50px;
+            font-size: 0.875rem;
             font-weight: 600;
-            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .reasoning-text {
+            font-size: 0.875rem;
+            line-height: 1.6;
+            color: var(--text-secondary);
             margin-bottom: 1rem;
         }
 
-        .segment-low {
-            background: rgba(239, 68, 68, 0.15);
-            color: #ef4444;
+        .feature-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
         }
 
-        .segment-mid {
-            background: rgba(59, 130, 246, 0.15);
-            color: #3b82f6;
+        .feature-bar {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
         }
 
-        .segment-high {
-            background: rgba(16, 185, 129, 0.15);
-            color: #10b981;
+        .feature-label {
+            width: 80px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
         }
 
-        .model-tag {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            background: var(--accent);
-            color: white;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            font-weight: 500;
-            margin-left: 0.5rem;
-        }
-
-        .confidence-bar {
+        .feature-track {
+            flex: 1;
             height: 6px;
-            background: var(--bg-card);
+            background: var(--bg-secondary);
             border-radius: 3px;
             overflow: hidden;
-            margin: 0.75rem 0;
         }
 
-        .confidence-fill {
+        .feature-fill {
             height: 100%;
             border-radius: 3px;
-            transition: width 0.8s ease;
+            transition: width 0.6s ease;
         }
 
-        .description {
-            padding: 0.875rem;
-            background: var(--bg-card);
-            border-radius: 10px;
-            color: var(--text-secondary);
-            line-height: 1.5;
-            font-size: 0.9rem;
-            margin-top: 0.75rem;
+        .feature-value {
+            width: 40px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-align: right;
         }
 
-        /* Charts */
+        /* Charts Grid */
         .charts-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 1rem;
-            margin-top: 1rem;
+            margin-bottom: 1.5rem;
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: 640px) {
             .charts-grid {
                 grid-template-columns: 1fr;
             }
         }
 
+        .chart-card {
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+            padding: 1rem;
+        }
+
+        .chart-title {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
         .chart-container {
             position: relative;
-            height: 200px;
+            height: 160px;
         }
 
         /* Model Comparison */
-        .comparison-grid {
+        .model-comparison {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 0.75rem;
-            margin-top: 1rem;
         }
 
-        .comparison-card {
-            background: var(--bg-card);
+        @media (max-width: 480px) {
+            .model-comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .model-card {
+            background: var(--bg-tertiary);
             border: 1px solid var(--border);
             border-radius: 10px;
-            padding: 0.75rem;
+            padding: 1rem;
             text-align: center;
+            transition: all 0.2s;
         }
 
-        .comparison-card.active {
-            border-color: var(--accent);
+        .model-card.active {
+            border-color: var(--primary);
+            background: rgba(14, 165, 233, 0.05);
         }
 
-        .comparison-model {
-            font-size: 0.7rem;
-            color: var(--text-secondary);
+        .model-card-icon {
+            width: 28px;
+            height: 28px;
+            margin: 0 auto 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .model-card.active .model-card-icon {
+            color: var(--primary);
+        }
+
+        .model-card-name {
+            font-size: 0.6875rem;
+            color: var(--text-muted);
+            margin-bottom: 0.375rem;
+        }
+
+        .model-card-segment {
+            font-size: 0.875rem;
+            font-weight: 600;
             margin-bottom: 0.25rem;
         }
 
-        .comparison-segment {
-            font-size: 0.9rem;
+        .model-card-conf {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* History Section */
+        .history-section {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .history-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .history-title h3 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
             font-weight: 600;
         }
 
-        .comparison-conf {
+        .history-clear {
             font-size: 0.75rem;
-            color: var(--text-secondary);
+            color: var(--text-muted);
+            background: none;
+            border: none;
+            cursor: pointer;
         }
 
-        /* Stats */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
+        .history-clear:hover {
+            color: var(--danger);
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            display: flex;
+            align-items: center;
             gap: 0.75rem;
-            margin-top: 1rem;
-        }
-
-        .stat-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 10px;
             padding: 0.75rem;
-            text-align: center;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
         }
 
-        .stat-value {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--accent);
+        .history-item:hover {
+            background: var(--bg-primary);
         }
 
-        .stat-label {
-            font-size: 0.7rem;
-            color: var(--text-secondary);
-            margin-top: 0.2rem;
+        .history-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
         }
 
-        /* Footer */
-        .footer {
-            text-align: center;
-            padding: 1.5rem;
-            color: var(--text-secondary);
-            font-size: 0.8rem;
-            margin-top: 2rem;
+        .history-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .history-segment {
+            font-size: 0.8125rem;
+            font-weight: 500;
+        }
+
+        .history-rfm {
+            font-size: 0.6875rem;
+            color: var(--text-muted);
+        }
+
+        .history-time {
+            font-size: 0.6875rem;
+            color: var(--text-muted);
         }
 
         /* Spinner */
@@ -497,157 +685,207 @@
                 transform: rotate(360deg);
             }
         }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 2rem 1rem;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <!-- Header -->
         <header class="header">
-            <div class="logo">
-                <div class="logo-icon">🧠</div>
-                <div class="logo-text">
+            <div class="brand">
+                <div class="brand-icon">
+                    <i data-lucide="brain" style="width: 24px; height: 24px;"></i>
+                </div>
+                <div class="brand-text">
                     <h1>Customer Intelligence</h1>
-                    <span>Neural Network • Gradient Boosting • Random Forest</span>
+                    <span>RFM Classification Platform</span>
                 </div>
             </div>
-            <div class="header-controls">
-                <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme"></button>
+            <div class="header-actions">
+                <button class="icon-btn" onclick="toggleTheme()" title="Toggle theme">
+                    <i data-lucide="sun" id="theme-icon" style="width: 20px; height: 20px;"></i>
+                </button>
             </div>
         </header>
 
-        <!-- Main Grid -->
         <div class="main-grid">
-            <!-- Input Card -->
+            <!-- Input Panel -->
             <div class="card">
-                <h2 class="card-title">📊 RFM Analysis</h2>
-
-                <!-- Model Selector -->
-                <div class="form-label">Select Model</div>
-                <div class="model-selector">
-                    <button class="model-btn active" data-model="nn" onclick="selectModel('nn')">
-                        <span class="icon">🧠</span>
-                        Neural Net
-                    </button>
-                    <button class="model-btn" data-model="gb" onclick="selectModel('gb')">
-                        <span class="icon">🚀</span>
-                        Gradient Boost
-                    </button>
-                    <button class="model-btn" data-model="rf" onclick="selectModel('rf')">
-                        <span class="icon">🌲</span>
-                        Random Forest
-                    </button>
+                <div class="card-header">
+                    <i data-lucide="bar-chart-3" style="width: 20px; height: 20px; color: var(--primary);"></i>
+                    <h2>RFM Analysis</h2>
                 </div>
+                <div class="card-body">
+                    <!-- Model Selector -->
+                    <div class="model-tabs">
+                        <div class="model-tab active" data-model="nn" onclick="selectModel('nn')">
+                            <div class="model-tab-icon">
+                                <i data-lucide="brain" style="width: 18px; height: 18px;"></i>
+                            </div>
+                            <div class="model-tab-label">Neural Net</div>
+                        </div>
+                        <div class="model-tab" data-model="gb" onclick="selectModel('gb')">
+                            <div class="model-tab-icon">
+                                <i data-lucide="trending-up" style="width: 18px; height: 18px;"></i>
+                            </div>
+                            <div class="model-tab-label">Gradient Boost</div>
+                        </div>
+                        <div class="model-tab" data-model="rf" onclick="selectModel('rf')">
+                            <div class="model-tab-icon">
+                                <i data-lucide="git-branch" style="width: 18px; height: 18px;"></i>
+                            </div>
+                            <div class="model-tab-label">Random Forest</div>
+                        </div>
+                    </div>
 
-                <form id="prediction-form">
-                    <div class="form-group">
-                        <label class="form-label">Recency (Days)</label>
-                        <input type="number" class="form-input" id="recency" placeholder="e.g., 30" required min="0">
-                        <p class="form-hint">Days since last purchase</p>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Frequency (Count)</label>
-                        <input type="number" class="form-input" id="frequency" placeholder="e.g., 5" required min="0">
-                        <p class="form-hint">Total number of transactions</p>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Monetary Value (£)</label>
-                        <input type="number" class="form-input" id="monetary" placeholder="e.g., 500" required min="0"
-                            step="0.01">
-                        <p class="form-hint">Total spending in GBP</p>
-                    </div>
-                    <button type="submit" class="btn-primary" id="submit-btn">
-                        <span id="btn-text">Classify Customer</span>
-                        <div class="spinner" id="spinner" style="display: none;"></div>
-                    </button>
-                </form>
+                    <form id="prediction-form">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i data-lucide="clock" style="width: 14px; height: 14px;"></i>
+                                Recency (Days)
+                            </label>
+                            <input type="number" class="form-input" id="recency" placeholder="e.g., 30" required
+                                min="0">
+                            <p class="form-hint">Days since customer's last purchase</p>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i data-lucide="repeat" style="width: 14px; height: 14px;"></i>
+                                Frequency (Count)
+                            </label>
+                            <input type="number" class="form-input" id="frequency" placeholder="e.g., 5" required
+                                min="0">
+                            <p class="form-hint">Total number of transactions</p>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i data-lucide="pound-sterling" style="width: 14px; height: 14px;"></i>
+                                Monetary Value (£)
+                            </label>
+                            <input type="number" class="form-input" id="monetary" placeholder="e.g., 500" required
+                                min="0" step="0.01">
+                            <p class="form-hint">Total spending amount in GBP</p>
+                        </div>
+                        <button type="submit" class="btn-primary" id="submit-btn">
+                            <i data-lucide="sparkles" style="width: 18px; height: 18px;"></i>
+                            <span id="btn-text">Classify Customer</span>
+                            <div class="spinner" id="spinner" style="display: none;"></div>
+                        </button>
+                    </form>
 
-                <!-- Quick Actions -->
-                <div class="quick-actions">
-                    <button class="quick-btn" onclick="fillSample('low')">
-                        <span class="icon">🔴</span>
-                        Low Sample
-                    </button>
-                    <button class="quick-btn" onclick="fillSample('mid')">
-                        <span class="icon">🔵</span>
-                        Mid Sample
-                    </button>
-                    <button class="quick-btn" onclick="fillSample('high')">
-                        <span class="icon">🟢</span>
-                        High Sample
-                    </button>
+                    <div class="sample-btns">
+                        <button type="button" class="sample-btn" onclick="fillSample('low')">
+                            <span class="sample-dot" style="background: var(--danger);"></span>
+                            <span>Low Sample</span>
+                        </button>
+                        <button type="button" class="sample-btn" onclick="fillSample('mid')">
+                            <span class="sample-dot" style="background: var(--warning);"></span>
+                            <span>Mid Sample</span>
+                        </button>
+                        <button type="button" class="sample-btn" onclick="fillSample('high')">
+                            <span class="sample-dot" style="background: var(--success);"></span>
+                            <span>High Sample</span>
+                        </button>
+                    </div>
+
+                    <!-- History -->
+                    <div class="history-section" id="history-section" style="display: none;">
+                        <div class="history-title">
+                            <h3>
+                                <i data-lucide="history" style="width: 16px; height: 16px;"></i>
+                                Recent Predictions
+                            </h3>
+                            <button class="history-clear" onclick="clearHistory()">Clear</button>
+                        </div>
+                        <div class="history-list" id="history-list"></div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Results Card -->
+            <!-- Results Panel -->
             <div class="card">
-                <h2 class="card-title">✨ Classification Result</h2>
-
-                <div id="initial-state">
-                    <div style="text-align: center; padding: 2rem 0; color: var(--text-secondary);">
-                        <div style="font-size: 3.5rem; margin-bottom: 0.75rem;">🎯</div>
-                        <p>Enter customer RFM data to classify their value segment</p>
-                    </div>
+                <div class="card-header">
+                    <i data-lucide="target" style="width: 20px; height: 20px; color: var(--primary);"></i>
+                    <h2>Classification Result</h2>
                 </div>
-
-                <div class="result-container" id="result-container">
-                    <div>
-                        <span id="segment-badge" class="segment-badge"></span>
-                        <span id="model-tag" class="model-tag"></span>
+                <div class="card-body">
+                    <div id="result-placeholder" class="result-placeholder">
+                        <div class="result-placeholder-icon">
+                            <i data-lucide="scan" style="width: 28px; height: 28px;"></i>
+                        </div>
+                        <p>Enter RFM data to classify customer segment</p>
                     </div>
 
-                    <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.75rem;">Confidence</p>
-                    <div class="confidence-bar">
-                        <div class="confidence-fill" id="confidence-fill" style="width: 0%;"></div>
-                    </div>
-                    <p id="confidence-text" style="font-weight: 600; font-size: 0.95rem;"></p>
+                    <div id="result-container" class="result-container">
+                        <!-- Segment Result -->
+                        <div class="segment-result">
+                            <div class="segment-icon" id="segment-icon">
+                                <i data-lucide="user" id="segment-lucide" style="width: 24px; height: 24px;"></i>
+                            </div>
+                            <div class="segment-info">
+                                <h3 id="segment-name">-</h3>
+                                <span id="model-used">-</span>
+                            </div>
+                            <div class="confidence-badge" id="confidence-badge">-</div>
+                        </div>
 
-                    <div class="description" id="description"></div>
+                        <!-- Reasoning -->
+                        <div class="reasoning-section">
+                            <div class="reasoning-title">
+                                <i data-lucide="lightbulb"
+                                    style="width: 16px; height: 16px; color: var(--warning);"></i>
+                                Why this classification?
+                            </div>
+                            <p class="reasoning-text" id="reasoning-text">-</p>
+                            <div class="feature-bars" id="feature-bars"></div>
+                        </div>
 
-                    <!-- Model Comparison -->
-                    <h3 style="font-size: 0.9rem; margin-top: 1.25rem; margin-bottom: 0.5rem;">📊 All Models Comparison
-                    </h3>
-                    <div class="comparison-grid" id="comparison-grid"></div>
-
-                    <!-- Charts -->
-                    <div class="charts-grid">
-                        <div>
-                            <h4 style="font-size: 0.8rem; margin-bottom: 0.5rem; color: var(--text-secondary);">
-                                Probability Distribution</h4>
-                            <div class="chart-container">
-                                <canvas id="probability-chart"></canvas>
+                        <!-- Charts -->
+                        <div class="charts-grid">
+                            <div class="chart-card">
+                                <div class="chart-title">Probability Distribution</div>
+                                <div class="chart-container">
+                                    <canvas id="probability-chart"></canvas>
+                                </div>
+                            </div>
+                            <div class="chart-card">
+                                <div class="chart-title">Model Confidence</div>
+                                <div class="chart-container">
+                                    <canvas id="comparison-chart"></canvas>
+                                </div>
                             </div>
                         </div>
-                        <div>
-                            <h4 style="font-size: 0.8rem; margin-bottom: 0.5rem; color: var(--text-secondary);">Model
-                                Confidence</h4>
-                            <div class="chart-container">
-                                <canvas id="comparison-chart"></canvas>
-                            </div>
-                        </div>
-                    </div>
 
-                    <!-- Stats -->
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-value" id="stat-recency">-</div>
-                            <div class="stat-label">Recency (Days)</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value" id="stat-frequency">-</div>
-                            <div class="stat-label">Frequency</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value" id="stat-monetary">-</div>
-                            <div class="stat-label">Monetary (£)</div>
-                        </div>
+                        <!-- Model Comparison -->
+                        <div class="model-comparison" id="model-comparison"></div>
                     </div>
                 </div>
             </div>
         </div>
 
         <footer class="footer">
-            <p>Customer Intelligence Platform • Neural Networks Course Project • CSE 5632</p>
+            Customer Intelligence Platform · CSE 5632 Neural Networks
         </footer>
     </div>
 
@@ -655,24 +893,44 @@
         let probabilityChart = null;
         let comparisonChart = null;
         let selectedModel = 'nn';
+        let history = JSON.parse(localStorage.getItem('predictionHistory') || '[]');
 
-        // Theme Toggle
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            loadTheme();
+            renderHistory();
+        });
+
+        // Theme
         function toggleTheme() {
-            const body = document.body;
-            const currentTheme = body.getAttribute('data-theme');
-            body.setAttribute('data-theme', currentTheme === 'light' ? 'dark' : 'light');
-            localStorage.setItem('theme', body.getAttribute('data-theme'));
+            const current = document.body.getAttribute('data-theme');
+            const newTheme = current === 'light' ? 'dark' : 'light';
+            document.body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon();
         }
 
-        const savedTheme = localStorage.getItem('theme') || 'dark';
-        document.body.setAttribute('data-theme', savedTheme);
+        function loadTheme() {
+            const saved = localStorage.getItem('theme') || 'dark';
+            document.body.setAttribute('data-theme', saved);
+            updateThemeIcon();
+        }
+
+        function updateThemeIcon() {
+            const icon = document.getElementById('theme-icon');
+            const isLight = document.body.getAttribute('data-theme') === 'light';
+            icon.setAttribute('data-lucide', isLight ? 'moon' : 'sun');
+            lucide.createIcons();
+        }
 
         // Model Selection
         function selectModel(model) {
             selectedModel = model;
-            document.querySelectorAll('.model-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.model === model);
+            document.querySelectorAll('.model-tab').forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.model === model);
             });
+            lucide.createIcons();
         }
 
         // Sample Data
@@ -696,7 +954,7 @@
             const spinner = document.getElementById('spinner');
             const submitBtn = document.getElementById('submit-btn');
 
-            btnText.textContent = 'Classifying...';
+            btnText.style.display = 'none';
             spinner.style.display = 'block';
             submitBtn.disabled = true;
 
@@ -722,66 +980,129 @@
                 }
 
                 displayResult(result);
+                saveToHistory(result);
             } catch (error) {
                 alert('Connection error. Please try again.');
             } finally {
-                btnText.textContent = 'Classify Customer';
+                btnText.style.display = 'inline';
                 spinner.style.display = 'none';
                 submitBtn.disabled = false;
             }
         });
 
         function displayResult(result) {
-            document.getElementById('initial-state').style.display = 'none';
+            document.getElementById('result-placeholder').style.display = 'none';
             document.getElementById('result-container').classList.add('visible');
 
-            // Segment Badge
-            const badge = document.getElementById('segment-badge');
-            const segmentClass = result.segment === 0 ? 'segment-low' : (result.segment === 1 ? 'segment-mid' : 'segment-high');
-            const segmentIcon = result.segment === 0 ? '🔴' : (result.segment === 1 ? '🔵' : '🟢');
-            badge.className = 'segment-badge ' + segmentClass;
-            badge.innerHTML = `${segmentIcon} ${result.segment_name}`;
+            // Segment
+            const segmentIcon = document.getElementById('segment-icon');
+            const segmentClasses = ['low', 'mid', 'high'];
+            segmentClasses.forEach(c => segmentIcon.classList.remove(c));
+            segmentIcon.classList.add(segmentClasses[result.segment]);
 
-            // Model Tag
-            document.getElementById('model-tag').textContent = result.model_used;
+            const icons = ['user-x', 'user', 'user-check'];
+            document.getElementById('segment-lucide').setAttribute('data-lucide', icons[result.segment]);
 
-            // Confidence
-            const confidenceFill = document.getElementById('confidence-fill');
-            confidenceFill.style.width = result.confidence + '%';
-            confidenceFill.style.background = result.color;
-            document.getElementById('confidence-text').textContent = result.confidence + '% Confidence';
+            document.getElementById('segment-name').textContent = result.segment_name;
+            document.getElementById('model-used').textContent = result.model_used;
+            document.getElementById('confidence-badge').textContent = result.confidence + '%';
 
-            // Description
-            document.getElementById('description').textContent = result.description;
+            // Reasoning
+            generateReasoning(result);
 
-            // Stats
-            document.getElementById('stat-recency').textContent = result.input.recency;
-            document.getElementById('stat-frequency').textContent = result.input.frequency;
-            document.getElementById('stat-monetary').textContent = '£' + result.input.monetary.toLocaleString();
+            // Charts
+            updateCharts(result.probabilities, result.all_models);
 
             // Model Comparison
             displayComparison(result.all_models);
 
-            // Charts
-            updateCharts(result.probabilities, result.all_models);
+            lucide.createIcons();
+        }
+
+        function generateReasoning(result) {
+            const input = result.input;
+            const segment = result.segment;
+
+            let reasons = [];
+            let factors = [];
+
+            // Analyze Recency
+            if (input.recency <= 30) {
+                reasons.push('recent purchase activity');
+                factors.push({ name: 'Recency', value: 90, color: 'var(--success)' });
+            } else if (input.recency <= 90) {
+                reasons.push('moderate recency');
+                factors.push({ name: 'Recency', value: 50, color: 'var(--warning)' });
+            } else {
+                reasons.push('low recent engagement');
+                factors.push({ name: 'Recency', value: 20, color: 'var(--danger)' });
+            }
+
+            // Analyze Frequency
+            if (input.frequency >= 10) {
+                reasons.push('high purchase frequency');
+                factors.push({ name: 'Frequency', value: 90, color: 'var(--success)' });
+            } else if (input.frequency >= 3) {
+                reasons.push('moderate transaction count');
+                factors.push({ name: 'Frequency', value: 50, color: 'var(--warning)' });
+            } else {
+                reasons.push('low transaction frequency');
+                factors.push({ name: 'Frequency', value: 20, color: 'var(--danger)' });
+            }
+
+            // Analyze Monetary
+            if (input.monetary >= 2000) {
+                reasons.push('high total spending');
+                factors.push({ name: 'Monetary', value: 90, color: 'var(--success)' });
+            } else if (input.monetary >= 500) {
+                reasons.push('moderate spending level');
+                factors.push({ name: 'Monetary', value: 50, color: 'var(--warning)' });
+            } else {
+                reasons.push('lower spending amount');
+                factors.push({ name: 'Monetary', value: 20, color: 'var(--danger)' });
+            }
+
+            const descriptions = {
+                0: `This customer shows ${reasons.join(', ')}. Consider re-engagement campaigns to prevent churn.`,
+                1: `This customer demonstrates ${reasons.join(', ')}. Target them with upselling opportunities and loyalty programs.`,
+                2: `This customer exhibits ${reasons.join(', ')}. Prioritize VIP treatment with personalized offers and premium support.`
+            };
+
+            document.getElementById('reasoning-text').textContent = descriptions[segment];
+
+            // Feature bars
+            const barsHtml = factors.map(f => `
+                <div class="feature-bar">
+                    <span class="feature-label">${f.name}</span>
+                    <div class="feature-track">
+                        <div class="feature-fill" style="width: ${f.value}%; background: ${f.color};"></div>
+                    </div>
+                    <span class="feature-value" style="color: ${f.color};">${f.value}%</span>
+                </div>
+            `).join('');
+            document.getElementById('feature-bars').innerHTML = barsHtml;
         }
 
         function displayComparison(allModels) {
-            const grid = document.getElementById('comparison-grid');
             const labels = { nn: 'Neural Network', gb: 'Gradient Boosting', rf: 'Random Forest' };
-            const icons = { nn: '🧠', gb: '🚀', rf: '🌲' };
+            const icons = { nn: 'brain', gb: 'trending-up', rf: 'git-branch' };
 
-            grid.innerHTML = Object.entries(allModels).map(([key, data]) => {
+            const html = Object.entries(allModels).map(([key, data]) => {
                 const conf = Math.max(data.probabilities.low, data.probabilities.mid, data.probabilities.high);
                 const isActive = key === selectedModel ? 'active' : '';
                 return `
-                    <div class="comparison-card ${isActive}">
-                        <div class="comparison-model">${icons[key]} ${labels[key]}</div>
-                        <div class="comparison-segment">${data.segment_name}</div>
-                        <div class="comparison-conf">${conf.toFixed(1)}%</div>
+                    <div class="model-card ${isActive}">
+                        <div class="model-card-icon">
+                            <i data-lucide="${icons[key]}" style="width: 20px; height: 20px;"></i>
+                        </div>
+                        <div class="model-card-name">${labels[key]}</div>
+                        <div class="model-card-segment">${data.segment_name}</div>
+                        <div class="model-card-conf">${conf.toFixed(1)}%</div>
                     </div>
                 `;
             }).join('');
+            document.getElementById('model-comparison').innerHTML = html;
+            lucide.createIcons();
         }
 
         function updateCharts(probabilities, allModels) {
@@ -791,7 +1112,9 @@
             if (probabilityChart) probabilityChart.destroy();
             if (comparisonChart) comparisonChart.destroy();
 
-            const isDark = document.body.getAttribute('data-theme') !== 'light';
+            const isLight = document.body.getAttribute('data-theme') === 'light';
+            const gridColor = isLight ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)';
+            const textColor = isLight ? '#64748b' : '#94a3b8';
 
             probabilityChart = new Chart(ctx1, {
                 type: 'doughnut',
@@ -799,21 +1122,17 @@
                     labels: ['Low', 'Mid', 'High'],
                     datasets: [{
                         data: [probabilities.low, probabilities.mid, probabilities.high],
-                        backgroundColor: ['#ef4444', '#3b82f6', '#10b981'],
+                        backgroundColor: ['#ef4444', '#eab308', '#22c55e'],
                         borderWidth: 0
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: 'bottom', labels: { color: isDark ? '#a0a0b0' : '#64748b', font: { size: 10 } } }
-                    }
+                    plugins: { legend: { position: 'bottom', labels: { color: textColor, font: { size: 10 } } } }
                 }
             });
 
-            // Model comparison chart
-            const modelNames = ['NN', 'GB', 'RF'];
             const modelConfs = Object.values(allModels).map(m =>
                 Math.max(m.probabilities.low, m.probabilities.mid, m.probabilities.high)
             );
@@ -821,12 +1140,11 @@
             comparisonChart = new Chart(ctx2, {
                 type: 'bar',
                 data: {
-                    labels: modelNames,
+                    labels: ['NN', 'GB', 'RF'],
                     datasets: [{
-                        label: 'Confidence %',
                         data: modelConfs,
-                        backgroundColor: ['#6366f1', '#8b5cf6', '#a855f7'],
-                        borderRadius: 6
+                        backgroundColor: ['#0ea5e9', '#6366f1', '#8b5cf6'],
+                        borderRadius: 4
                     }]
                 },
                 options: {
@@ -834,19 +1152,59 @@
                     maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: {
-                        y: {
-                            beginAtZero: true,
-                            max: 100,
-                            grid: { color: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' },
-                            ticks: { color: isDark ? '#a0a0b0' : '#64748b', font: { size: 10 } }
-                        },
-                        x: {
-                            grid: { display: false },
-                            ticks: { color: isDark ? '#a0a0b0' : '#64748b', font: { size: 10 } }
-                        }
+                        y: { beginAtZero: true, max: 100, grid: { color: gridColor }, ticks: { color: textColor, font: { size: 10 } } },
+                        x: { grid: { display: false }, ticks: { color: textColor, font: { size: 10 } } }
                     }
                 }
             });
+        }
+
+        // History
+        function saveToHistory(result) {
+            const item = {
+                segment: result.segment,
+                segment_name: result.segment_name,
+                input: result.input,
+                time: new Date().toLocaleTimeString()
+            };
+            history.unshift(item);
+            if (history.length > 10) history.pop();
+            localStorage.setItem('predictionHistory', JSON.stringify(history));
+            renderHistory();
+        }
+
+        function renderHistory() {
+            if (history.length === 0) {
+                document.getElementById('history-section').style.display = 'none';
+                return;
+            }
+            document.getElementById('history-section').style.display = 'block';
+
+            const colors = ['var(--danger)', 'var(--warning)', 'var(--success)'];
+            const html = history.map((item, i) => `
+                <div class="history-item" onclick="loadHistory(${i})">
+                    <span class="history-dot" style="background: ${colors[item.segment]};"></span>
+                    <div class="history-details">
+                        <div class="history-segment">${item.segment_name}</div>
+                        <div class="history-rfm">R:${item.input.recency} F:${item.input.frequency} M:£${item.input.monetary}</div>
+                    </div>
+                    <span class="history-time">${item.time}</span>
+                </div>
+            `).join('');
+            document.getElementById('history-list').innerHTML = html;
+        }
+
+        function loadHistory(index) {
+            const item = history[index];
+            document.getElementById('recency').value = item.input.recency;
+            document.getElementById('frequency').value = item.input.frequency;
+            document.getElementById('monetary').value = item.input.monetary;
+        }
+
+        function clearHistory() {
+            history = [];
+            localStorage.removeItem('predictionHistory');
+            renderHistory();
         }
     </script>
 </body>
