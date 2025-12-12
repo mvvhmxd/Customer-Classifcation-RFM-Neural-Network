@@ -9,7 +9,7 @@
 [![Flask](https://img.shields.io/badge/Flask-3.0-green.svg)](https://flask.palletsprojects.com)
 [![Accuracy](https://img.shields.io/badge/Accuracy-99.08%25-brightgreen.svg)](#)
 
-[**Live Demo**]([https://your-app.railway.app](https://huggingface.co/spaces/mvvhmxd1/Customer-Classifcation-RFM-Neural-Network)) 
+[**Live Demo**](https://huggingface.co/spaces/mvvhmxd1/Customer-Classifcation-RFM-Neural-Network)
 
 </div>
 
